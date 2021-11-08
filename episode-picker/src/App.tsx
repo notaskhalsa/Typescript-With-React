@@ -1,8 +1,7 @@
-import React from 'react';
-import './App.css';
-import { IEpisodes, IAction } from './interfaces';
-import { Store } from './store';
-
+import React from "react";
+import "./App.css";
+import { Store } from "./store";
+import { Link } from "@reach/router";
 
 // export default function App(){
 //   return(
@@ -10,44 +9,8 @@ import { Store } from './store';
 //   );
 // }
 
-
-export default function App(): JSX.Element {
-  const { state, dispatch } = React.useContext(Store);
-
-  React.useEffect(() => {
-    state.episodes.length === 0 && fetchDataAction();
-  });
-
-  const fetchDataAction = async () => {
-    const URL ="https://api.tvmaze.com/singlesearch/shows?q=girls&embed=episodes";
-    const data = await fetch(URL);
-    const dataJSON = await data.json();
-    console.log(dataJSON)
-    return dispatch({
-      type: "FETCH_DATA",
-      payload: dataJSON._embedded.episodes
-    });
-  };
-
-
-  const toggleFavAction = (episode: IEpisodes): IAction => {
-    const episodeInFav = state.favourites.includes(episode)
-    let dispactchObj = {
-      type: 'ADD_FAV',
-      payload: episode
-    }
-    
-    if(episodeInFav){
-      const favWithoutEpisode = state.favourites.filter((fav: IEpisodes) => fav.id !== episode.id)
-      dispactchObj = {
-        type: 'REMOVE_FAV',
-        payload: favWithoutEpisode
-      }
-    }
-    
-    return dispatch(dispactchObj);
-  }
-  console.log(state);
+export default function App(props: any): JSX.Element {
+  const { state } = React.useContext(Store);
 
   return (
     <React.Fragment>
@@ -57,12 +20,11 @@ export default function App(): JSX.Element {
           <p>Pick your fav episode!!</p>
         </div>
         <div id="favourites">
-          Favourite(s): {state.favourites.length}
+          <Link to="/">Home</Link>
+          <Link to="/faves"> Favourite(s): {state.favourites.length} </Link>
         </div>
       </header>
-      <section className="episode-layout">
-        
-      </section>
+      {props.children}
     </React.Fragment>
   );
 }
